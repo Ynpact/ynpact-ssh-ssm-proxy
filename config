@@ -1,0 +1,12 @@
+# host wildmoka
+#   hostname awstest-load-balancer-013d1c5ccbbf491b.elb.us-east-1.amazonaws.com
+#   user wild
+#   port 20010
+#   identityFile ~/wildmoka/infra.pem
+#   ForwardAgent yes
+host aws-* i-* mi-*
+  StrictHostKeyChecking no
+  ProxyCommand bash -ci "/home/apalepex/.ssh/sshProxy.sh cnx %h %p"
+
+host 34.244.130.228
+  IdentityFile ~/.ssh/alex.pem
