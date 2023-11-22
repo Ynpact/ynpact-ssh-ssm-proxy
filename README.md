@@ -6,9 +6,8 @@ To set up this powerful extension and use into Windows, follow these basic steps
 (you can easily adjust it for Linux and Mac)
 1) Install AWS CLI and SSM Plugin into WSL
 Ensure that you have the AWS CLI and the SSM plugin installed within the Windows Subsystem for Linux (WSL) on your development machine. These tools are essential for connecting to EC2 instances via SSM.
-2) Download and Save the SSH Proxy Script
+2) Install the SSH Proxy Script src/sshProxy.sh
 Download the provided SSH proxy script and save it into the .ssh directory of your home directory within WSL. This script is the key to connecting to EC2 instances securely and efficiently.
-sshProxy.sh here
 3) Update SSH Config File
 Modify your SSH config file in WSL to use the script you saved in step 2 whenever a hostname starts with "aws-". This ensures that the extension will be invoked for your EC2 instance connections.
 host aws-* i-* mi-*
@@ -31,7 +30,7 @@ C:\Windows\system32\wsl.exe bash -ic '/home/apalepex/.ssh/sshProxy.sh %*'
 
 5) Update Remote SSH Plugin Path
 Update the path for the Remote SSH plugin in VS Code to use the .bat script you created in step 4. This step connects the extension to your EC2 instances.
-
+![Updating remote SSH extension path parameter](doc/setting-remote-ext.png)
 
 ## Configuration and Connection
 To configure and connect to your EC2 instances, use the following steps:
