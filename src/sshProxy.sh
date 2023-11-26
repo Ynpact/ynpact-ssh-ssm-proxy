@@ -56,6 +56,7 @@ if [[ $# == 2 && ($1 == "newhost" || $1 == "edithost") ]]; then
     echo "Instance region ? " ; read region
     echo "SSH user ? " ; read user
     echo "SSH key file ? " ; read key
+    echo "Local path to public key to install in EC2 instance authorized_key [leave empty for no installation] ? " ; read publickey
     if [[ $loginType == "y" ]]; then
         loginType="sso"
     fi
@@ -67,6 +68,17 @@ if [[ $# == 2 && ($1 == "newhost" || $1 == "edithost") ]]; then
         rm -rf $HOME/.aws/sshssm/$profile.json
     else
         echo $confLine >> $mapFile
+    fi
+    # install public key
+    if [[ ! -z "$publickey" ]]; then
+        login
+        instanceId=$(aws ec2 describe-instances --output text --query "Reservations[*].Instances[*].InstanceId" --filters "Name=tag:Name,Values=$instanceName" --region $region)
+        cat $publickey | aws ssm start-session \
+            --region $region \
+            --target $instanceId \
+            --document-name "AWS-StartNonInteractiveCommand" \
+            --parameter command="mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+        exit $?
     fi
     exit 0
 fi
