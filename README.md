@@ -41,8 +41,8 @@ Update the path parameter of the Remote SSH plugin in VS Code to use
 ## Configuration
 ### Operator's authorization requirement
 The operator using the tool must have the following permissions :
-- can describe EC2 instances on target region and account
-- can start SSM section onto the target ECS-instance(s) using the documents "AWS-StartNonInteractiveCommand" and "AWS-StartSSHSession"
+- can describe EC2 instances on target region and account (to retrieve instanceId based on instance name)
+- can start SSM section onto the target ECS-instance(s) using the documents "AWS-StartNonInteractiveCommand" (to optionnaly auto-install SSH public key) and "AWS-StartSSHSession" (to connect to the EC2 instance)
 ### Add, edit or remove a Host:
 This command allows you to create, edit or delete a host configuration, identified by an alias you can choose.
 ```
