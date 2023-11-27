@@ -1,5 +1,5 @@
 # ynpact-ssh-ssm-proxy
-SSH-SSM-Proxy-script allow to use VS Code remote SSH plugin through a AWS SSM Session Manager SSH session to connect to and manage remote hosts in a painlessly manner.
+Ynpact SSH-SSM-Proxy tool allow to use VS Code remote SSH plugin through a AWS SSM Session Manager SSH session to connect to and manage remote hosts in a painlessly manner.
 
 While you'll find on most blog solutions that allow to connect to remote EC2 instance using SSM, none of these are generic enough to allows a convenient daily use. With this proxy script, you can administrate at scale a wide variety of EC2 instances, located onto different AWS account and region, using different SSH key/user, AWS authentication methods and AWS credentials profiles.
 
@@ -8,16 +8,16 @@ It also provide a unique feature that forward and inject locally AWS credential 
 ## Features:
 - Enhanced Security and logging for EC2 instances SSH session with AWS SSM Session Manager.
   **Connect to EC2 instances located in private subnet with inbound SSH port closed**
-- Enhanced remote file system integration in VS Code when using AWS credentials gained by SSO **It will not popout the broswer for SSO login multiple time**
-- Connect to host using friendly name instead of ID that may change over time **You can forget about looking for instanceIDs**
-- Use AWS credential locally gained by SSO within the EC2 instances **Once connected into the C2 instances, users act as themselve, with their own set of authorization, not as the EC2 instance profile role**
-- for each host, allow to configure credential profile, region, user and SSH key to use and activate or not current credential fowarding into the EC2 instance **If you have a huge list of EC2 instance to connect to, locatad in different account, region and using different credential profile, this tool is for you, a you won't have to insert all that EC2 host specific conf into your ssh config file with a ProxyCommand line you can not refactor**
+- Enhanced remote file system integration in VS Code when using AWS credentials gained by SSO. **It will not popout the broswer for SSO login multiple time**
+- Connect to host using friendly name instead of ID that may change over time. **You can forget about looking for instanceIDs**
+- Use AWS credential locally gained by SSO within the EC2 instances. **Once connected into the EC2 instances, users act as themselve, with their own set of authorization, not as the EC2 instance profile role**
+- for each host, allow to configure credential profile, region, user and SSH key to use and activate or not current credential fowarding into the EC2 instance. **If you have a huge list of EC2 instance to connect to, locatad in different account, region and using different credential profile, this tool is for you, a you won't have to insert all that EC2 host specific conf into your ssh config file with a ProxyCommand line you can not refactor**
 - allow auto install specified public key in the autorized_key file of the remote EC2 instance on first setup
 
 ## How it works
 See our blog post to understand the connection flow here : {link}
 
-## Setting Up Ynpact's VS Code Remote SSH Extension
+## Setting Up Ynpact's SSH-SSM proxy tool
 You can install it on any operating system, but on windows you must perform those step in your default WSL distribution with its default user (appart from step 4 and 5 that must be done in the Windows host).
 1) Install AWS CLI and SSM Plugin into your Mac/Linux/WSL. Instruction available in AWS documentation.
 2) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your default user .ssh directory in your Mac/Linux/WSL.
@@ -38,8 +38,11 @@ Update the path parameter of the Remote SSH plugin in VS Code to use
 - Linux/Mac: ~/.ssh/sshProxy.sh
 ![Updating remote SSH extension path parameter](doc/setting-remote-ext.png)
 
-## Configuration and Connection
-To configure and connect to your EC2 instances, use the following steps:
+## Configuration
+### Operator's authorization requirement
+The operator using the tool must have the following permissions :
+- can describe EC2 instances on target region and account
+- can start SSM section onto the target ECS-instance(s) using the documents "AWS-StartNonInteractiveCommand" and "AWS-StartSSHSession"
 ### Add, edit or remove a Host:
 This command allows you to create, edit or delete a host configuration, identified by an alias you can choose.
 ```
@@ -48,12 +51,14 @@ This command allows you to create, edit or delete a host configuration, identifi
 Run it and for newhost or edithost command option, answer the script prompts :
 - Instance name tag : enter your target EC2 instance name-tag value
 - Connect via AWS SSO y/n : type "y" to gain AWS credential using your corporate IdP and AWS Identity Center (AWS SSO)
-- AWS credential profile to use : enter the name of the AWS credential profile to use to connect to the target EC2 instance (you must configure this profile beforhand). See credential requirement section to ensure this profile will authorize all action needed by the script
+- AWS credential profile to use : enter the name of the AWS credential profile to use to connect to the target EC2 instance (you must configure this profile beforhand). See "operator credential requirement" section to ensure this profile will authorize all action needed by the script
 - Forward local AWS credential into EC2 session y/n : type "y" to forward/inject local credential that are used to connect to the EC2 instance into the remote SSH session. Otherwise, the remote session will use the EC2 instance profile IAM role.
 - Instance region : enter the AS region where the target EC2 instance is running
 - SSH user : enter the SSH user to use to connect to the EC2 instane. This depend the EC2 instance distribution. It might be ec2-user, ubuntu or any other user.
 - SSH private key file path : enter the path to the private SSH key to use to connect to the instance
 - Local path to public key to install in EC2 instance authorized_key [leave empty for no installation] : enter the path to the public SSH key to install in the SSH authorized_key file of the target user within the EC2 instance
+
+## Ynpact SSH-SSM tool usage
 ### Connect to a Pre-configured Host:
 In VS Code's command palette, select "Connect to Remote Host," and enter the host's alias choosen when creating a new host.
 ### Connect to a Non-configured Host:
@@ -67,5 +72,4 @@ Host aws-host
     HostName aws-host
 ```
 ![How to connect to a bookmarked host](doc/bookmarking.png)
-
 
