@@ -17,7 +17,7 @@ It also provide a unique feature that forward and inject locally AWS credential 
 ## How it works
 See our blog post to understand the connection flow here : {link}
 
-## Setting Up Ynpact's SSH-SSM proxy tool
+## Set Up
 You can install it on any operating system, but on windows you must perform those step in your default WSL distribution with its default user (appart from step 4 and 5 that must be done in the Windows host).
 1) Install AWS CLI and SSM Plugin into your Mac/Linux/WSL. Instruction available in AWS documentation.
 2) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your default user .ssh directory in your Mac/Linux/WSL.
@@ -58,7 +58,7 @@ Run it and for newhost or edithost command option, answer the script prompts :
 - SSH private key file path : enter the path to the private SSH key to use to connect to the instance
 - Local path to public key to install in EC2 instance authorized_key [leave empty for no installation] : enter the path to the public SSH key to install in the SSH authorized_key file of the target user within the EC2 instance
 
-## Ynpact SSH-SSM tool usage
+## Usage
 ### Connect to a Pre-configured Host:
 In VS Code's command palette, select "Connect to Remote Host," and enter the host's alias choosen when creating a new host.
 ### Connect to a Non-configured Host:
