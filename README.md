@@ -45,7 +45,7 @@ This command allows you to create, edit or delete a host configuration, identifi
 ```
 ~/.ssh/sshSsmProxy.sh newhost|edithost|rmhost {alias}
 ```
-Run it and answer the script prompts :
+Run it and for newhost or edithost command option, answer the script prompts :
 - Instance name tag : enter your target EC2 instance name-tag value
 - Connect via AWS SSO y/n : type "y" to gain AWS credential using your corporate IdP and AWS Identity Center (AWS SSO)
 - AWS credential profile to use : enter the name of the AWS credential profile to use to connect to the target EC2 instance (you must configure this profile beforhand). See credential requirement section to ensure this profile will authorize all action needed by the script
@@ -58,13 +58,14 @@ Run it and answer the script prompts :
 In VS Code's command palette, select "Connect to Remote Host," and enter the host's alias choosen when creating a new host.
 ### Connect to a Non-configured Host:
 If you need to connect to a host that hasn't been previously configured, and that you don't plan to connect to often, use the command palette in VS Code to select "Connect to Remote Host." and enter the host information in the format :
+
 {hostname}.{sso|static}.{aws-profile}.{forward-cred-y|n}.{aws-region}.{ssh-user}.{ssh-private-key-file-path}.
 ### Bookmarking hosts
-Into your SSH config file of your windows host C:\Users\<username>\.ssh\config, you can add the host you connect to frequently so it appears in VS Code when you use the command palette : 
-'''
+Into your SSH config file of your windows host C:\Users\{username}\.ssh\config, you can add the host you connect to frequently so it appears in VS Code when you use the command palette : 
+```
 Host aws-host
     HostName aws-host
-'''
+```
 ![How to connect to a bookmarked host](doc/bookmarking.png)
 
 
