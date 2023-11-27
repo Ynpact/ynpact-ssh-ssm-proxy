@@ -1,0 +1,41 @@
+# to be used in https://www.websequencediagrams.com/ to genrate the diagram
+
+title SSM SSH Proxy
+
+participant "VS Code Client\n(windows host)" as vsc
+participant "sshProxy.bat\n(pass through WSL)" as bat
+participant "sshProxy\n(login + settings)" as p
+participant "AWS\nIdentity Center" as sso
+participant "ssh client\n(ProxyCommand)" as sshc
+participant "sshProxy\n(connection)" as pp
+participant "aws cli" as cli
+participant "Target EC2 instance" as ec2
+
+
+vsc->bat: Init SSH connection
+bat->p: Init SSH connection
+
+p->p: get conf
+p->sso: SSO Login
+sso->p: AWS Credentials
+
+opt Get instance ID from Instance name tag
+    p->cli: Retrieve instance ID
+    cli->p: Instance ID
+end
+
+opt Auto install SSH key
+    p->cli: Install public key in SSH authorized_key
+    cli->ec2: command
+end
+
+p->sshc: Connect to EC2
+sshc->pp: Connect to EC2
+pp->cli: Connect to EC2
+cli->ec2: Connect to EC2
+ec2->cli:
+cli->pp:
+pp->sshc:
+sshc->p:
+p->bat:
+bat->vsc:
