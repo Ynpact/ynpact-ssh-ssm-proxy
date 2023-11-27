@@ -55,7 +55,7 @@ if [[ $# == 2 && ($1 == "newhost" || $1 == "edithost") ]]; then
     echo "Forward local AWS credential into EC2 session y/n ? " ; read forwardCred
     echo "Instance region ? " ; read region
     echo "SSH user ? " ; read user
-    echo "SSH key file ? " ; read key
+    echo "SSH private key file path ? " ; read key
     echo "Local path to public key to install in EC2 instance authorized_key [leave empty for no installation] ? " ; read publickey
     if [[ $loginType == "y" ]]; then
         loginType="sso"
@@ -77,7 +77,7 @@ if [[ $# == 2 && ($1 == "newhost" || $1 == "edithost") ]]; then
             --region $region \
             --target $instanceId \
             --document-name "AWS-StartNonInteractiveCommand" \
-            --parameter command="mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
+            --parameter command="mkdir -p /home/$user/.ssh && cat >> ~/.ssh/authorized_keys"
         exit $?
     fi
     exit 0
