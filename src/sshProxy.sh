@@ -1,6 +1,6 @@
 #!/bin/bash
 regexp="aws-.*"
-regexpId="aws-.*\..*\..*\..*\..*\..*\..*"
+regexpId=".*\..*\..*\..*\..*\..*\..*"
 portNumber=22
 bashCommand="bash"
 mapFile="$HOME/.ssh/ec2Map.txt"
@@ -69,7 +69,6 @@ show_var() {
 log "Input from VSCODE remote SSH plugin : $*"
 
 log "Running in $(pwd)"
-log "map>>> $(cat $mapFile)"
 
 # handle vscode remote ssh plugin probe of ssh client
 if [[ $1 = "-V" ]]; then
@@ -159,16 +158,17 @@ if [[ "$target" =~ $regexp ]]; then
     $command
 # if using directly (no conf file)
 elif [[ "$target" =~ $regexpId ]]; then
+    log "get conf from hostname"
     instanceName=$(echo $target | awk -F '.' '{print $1}')
     loginType=$(echo $target | awk -F '.' '{print $2}')
     profile=$(echo $target | awk -F '.' '{print $3}')
     forwardCred=$(echo $target | awk -F '.' '{print $4}')
     region=$(echo $target | awk -F '.' '{print $5}')
     user=$(echo $target | awk -F '.' '{print $6}')
-    key=$(echo $target | awk -F '.' '{print $7}')
+    key=$(echo $target | awk -F '.' '{print $7 "." $8}')
     show_var
     login
-    if [[ "$target" =~ "m?i-.*" ]]; then
+    if [[ "$instanceName" =~ "m?i-.*" ]]; then
         instanceId=$instanceName
     else
         instanceId=$(aws ec2 describe-instances --output text --query "Reservations[*].Instances[*].InstanceId" --filters "Name=tag:Name,Values=$instanceName" --region $region)
@@ -178,6 +178,7 @@ elif [[ "$target" =~ $regexpId ]]; then
     log "$command"
     $command
 else
+    log "forward to regular ssh client"
     # if not an AWS instance, use regular SSH directly
     ssh $*
 fi
