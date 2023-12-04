@@ -9,6 +9,63 @@ logfile="/tmp/sshssm.log"
 log() {
     echo "$(date) > $1" >> $logfile
 }
+
+login() {
+    mkdir -p ".aws/sshssm/"
+    tmpCredFile="$HOME/.aws/sshssm/$profile.json"
+    touch $tmpCredFile
+    chmod 600 $tmpCredFile
+
+    currentDate=$(date --utc +%FT%TZ | cut -c 1-19)
+    expiration=$(cat $tmpCredFile | jq -r '.Expiration' | cut -c 1-19)
+    if [[ $expiration != "" && $expiration > $currentDate ]]; then
+        log "cred existing"
+    else
+        log "cred non existing or expired"
+        firstLaunch="true"
+        if [[ $loginType = "sso" ]]; then
+            aws sso login --profile $profile >> $logfile 2>/tmp/err </dev/null
+        fi
+        aws configure export-credentials --profile $profile > $tmpCredFile
+    fi
+    awskey=$(cat $tmpCredFile | jq -r '.AccessKeyId')
+    awssecret=$(cat $tmpCredFile | jq -r '.SecretAccessKey')
+    export AWS_ACCESS_KEY_ID=$awskey
+    export AWS_SECRET_ACCESS_KEY=$awssecret
+    if [[ $loginType = "sso" ]]; then
+        awstoken=$(cat $tmpCredFile | jq -r '.SessionToken')
+        export AWS_SESSION_TOKEN=$awstoken
+    fi
+}
+
+forwardCredInBash() {
+    # to forward the current AWS SSO/regular credential into the remote session
+    # we need to kill first the vscode server, as env var are propagated only at
+    # first init of the vscode server and then remains the same for all subsequent
+    # new session. Also to cleanup sessions as many vscode-server binary remains.
+    # NB: do this only at first launch in the credential validity window
+    if [[ $firstLaunch == "true" ]]; then
+        killVscodeCmd="ps uxa | grep .vscode-server | awk '{print \$2}' | xargs kill"
+        command="ssh -i $key $user@$instanceId.$profile.$region $killVscodeCmd"
+        log "Reset vscode-server command : $command"
+        $command < /dev/null > /dev/null 2> /dev/null
+    fi
+    if [[ $forwardCred == "y" ]]; then        
+        bashCommand="AWS_ACCESS_KEY_ID=$awskey AWS_SECRET_ACCESS_KEY=$awssecret AWS_SESSION_TOKEN=$awstoken $bashCommand"
+    fi
+}
+
+show_var() {
+    log "login: $loginType"
+    log "profile: $profile"
+    log "forwardCred: $forwardCred"
+    log "region: $region"
+    log "instanceName: $instanceName"
+    log "instanceId: $instanceId"
+    log "key: $key"
+    log "user: $user"
+}
+
 log "Input from VSCODE remote SSH plugin : $*"
 
 log "Running in $(pwd)"
@@ -56,7 +113,6 @@ if [[ $# == 2 && ($1 == "newhost" || $1 == "edithost") ]]; then
     echo "Instance region ? " ; read region
     echo "SSH user ? " ; read user
     echo "SSH private key file path ? " ; read key
-    echo "Local path to public key to install in EC2 instance authorized_key [leave empty for no installation] ? " ; read publickey
     if [[ $loginType == "y" ]]; then
         loginType="sso"
     fi
@@ -68,17 +124,6 @@ if [[ $# == 2 && ($1 == "newhost" || $1 == "edithost") ]]; then
         rm -rf $HOME/.aws/sshssm/$profile.json
     else
         echo $confLine >> $mapFile
-    fi
-    # install public key
-    if [[ ! -z "$publickey" ]]; then
-        login
-        instanceId=$(aws ec2 describe-instances --output text --query "Reservations[*].Instances[*].InstanceId" --filters "Name=tag:Name,Values=$instanceName" --region $region)
-        cat $publickey | aws ssm start-session \
-            --region $region \
-            --target $instanceId \
-            --document-name "AWS-StartNonInteractiveCommand" \
-            --parameter command="mkdir -p /home/$user/.ssh && cat >> ~/.ssh/authorized_keys"
-        exit $?
     fi
     exit 0
 fi
@@ -93,62 +138,6 @@ fi
 
 target=$4
 log "Target: $target"
-
-login() {
-    mkdir -p ".aws/sshssm/"
-    tmpCredFile="$HOME/.aws/sshssm/$profile.json"
-    touch $tmpCredFile
-    chmod 600 $tmpCredFile
-
-    currentDate=$(date --utc +%FT%TZ | cut -c 1-19)
-    expiration=$(cat $tmpCredFile | jq -r '.Expiration' | cut -c 1-19)
-    if [[ $expiration != "" && $expiration > $currentDate ]]; then
-        log "cred existing"
-    else
-        log "cred non existing or expired"
-        firstLaunch="true"
-        if [[ $loginType = "sso" ]]; then
-            aws sso login --profile $profile >> $logfile 2>/tmp/err </dev/null
-        fi
-        aws configure export-credentials --profile $profile > $tmpCredFile
-    fi
-    awskey=$(cat $tmpCredFile | jq -r '.AccessKeyId')
-    awssecret=$(cat $tmpCredFile | jq -r '.SecretAccessKey')
-    export AWS_ACCESS_KEY_ID=$awskey
-    export AWS_SECRET_ACCESS_KEY=$awssecret
-    if [[ $loginType = "sso" ]]; then
-        awstoken=$(cat $tmpCredFile | jq -r '.SessionToken')
-        export AWS_SESSION_TOKEN=$awstoken
-    fi
-}
-
-show_var() {
-    log "login: $loginType"
-    log "profile: $profile"
-    log "forwardCred: $forwardCred"
-    log "region: $region"
-    log "instanceName: $instanceName"
-    log "instanceId: $instanceId"
-    log "key: $key"
-    log "user: $user"
-}
-
-forwardCredInBash() {
-    # to forward the current AWS SSO/regular credential into the remote session
-    # we need to kill first the vscode server, as env var are propagated only at
-    # first init of the vscode server and then remains the same for all subsequent
-    # new session. Also to cleanup sessions as many vscode-server binary remains.
-    # NB: do this only at first launch in the credential validity window
-    if [[ $firstLaunch == "true" ]]; then
-        killVscodeCmd="ps uxa | grep .vscode-server | awk '{print \$2}' | xargs kill"
-        command="ssh -i $key $user@$instanceId.$profile.$region $killVscodeCmd"
-        log "Reset vscode-server command : $command"
-        $command < /dev/null > /dev/null 2> /dev/null
-    fi
-    if [[ $forwardCred == "y" ]]; then        
-        bashCommand="AWS_ACCESS_KEY_ID=$awskey AWS_SECRET_ACCESS_KEY=$awssecret AWS_SESSION_TOKEN=$awstoken $bashCommand"
-    fi
-}
 
 # if host conf in conf file
 if [[ "$target" =~ $regexp ]]; then

@@ -12,7 +12,6 @@ It also provide a unique feature that forward and inject locally AWS credential 
 - Connect to host using friendly name instead of ID that may change over time. **You can forget about looking for instanceIDs**
 - Use AWS credential locally gained by SSO within the EC2 instances. **Once connected into the EC2 instances, users act as themselve, with their own set of authorization, not as the EC2 instance profile role**
 - for each host, allow to configure credential profile, region, user and SSH key to use and activate or not current credential fowarding into the EC2 instance. **If you have a huge list of EC2 instance to connect to, locatad in different account, region and using different credential profile, this tool is for you, a you won't have to insert all that EC2 host specific conf into your ssh config file with a ProxyCommand line you can not refactor**
-- allow auto install specified public key in the autorized_key file of the remote EC2 instance on first setup
 
 ## How it works
 See our blog post to understand the connection flow here : {link}
@@ -56,7 +55,6 @@ Run it and for newhost or edithost command option, answer the script prompts :
 - Instance region : enter the AS region where the target EC2 instance is running
 - SSH user : enter the SSH user to use to connect to the EC2 instane. This depend the EC2 instance distribution. It might be ec2-user, ubuntu or any other user.
 - SSH private key file path : enter the path to the private SSH key to use to connect to the instance
-- Local path to public key to install in EC2 instance authorized_key [leave empty for no installation] : enter the path to the public SSH key to install in the SSH authorized_key file of the target user within the EC2 instance
 
 ## Usage
 ### Connect to a Pre-configured Host:
