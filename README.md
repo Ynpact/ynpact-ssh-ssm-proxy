@@ -1,9 +1,9 @@
 # ynpact-ssh-ssm-proxy
-Ynpact SSH-SSM-Proxy tool allow to use VS Code remote SSH plugin through a AWS SSM Session Manager SSH session to connect to and manage remote hosts in a painlessly manner.
+Ynpact SSH-SSM-Proxy tool allow to use VS Code remote SSH plugin through a AWS SSM Session Manager SSH session **to connect to and manage remote EC2 hosts in a painlessly manner**.
 
-While you'll find on most blog solutions that allow to connect to remote EC2 instance using SSM, none of these are generic enough to allows a convenient daily use. With this proxy script, you can administrate at scale a wide variety of EC2 instances, located onto different AWS account and region, using different SSH key/user, AWS authentication methods and AWS credentials profiles.
+While you'll find on most blog solutions that allow to connect to remote EC2 instance using SSM, none of these are generic enough to allows a convenient daily use. With this proxy script, **you can administrate at scale a wide variety of EC2 instances**, located onto different AWS account and region, using different SSH key/user, AWS authentication methods and AWS credentials profiles.
 
-It also provide a unique feature that forward and inject locally AWS credential (gained via AWS SSO/IdentityCenter or static key) into the remote EC2 instance, so that you still can manage the authorization per user even in the EC2 instance, where by default, the EC2 instance role  apply (see ore on {blog post note}).
+It also provide a **unique feature that forward and inject locally AWS credential** (gained via AWS SSO/IdentityCenter or static key) into the remote EC2 instance, so that you still can manage the authorization per user even in the EC2 instance, where by default, the EC2 instance role  apply (see ore on {blog post note}).
 
 ## Features:
 - Enhanced Security and logging for EC2 instances SSH session with AWS SSM Session Manager.
@@ -64,7 +64,7 @@ If you need to connect to a host that hasn't been previously configured, and tha
 
 {hostname}.{sso|static}.{aws-profile}.{forward-cred-y|n}.{aws-region}.{ssh-user}.{ssh-private-key-file-path}.
 
-Note: the private key must be in the .ssh directory of current WSL/Linux/MacOS user
+Note: the private key MUST be in the .ssh directory of current WSL/Linux/MacOS user
 ### Bookmarking hosts
 Into your SSH config file of your windows host C:\Users\{username}\.ssh\config, you can add the host you connect to frequently so it appears in VS Code when you use the command palette : 
 ```
