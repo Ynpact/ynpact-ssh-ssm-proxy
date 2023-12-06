@@ -57,6 +57,7 @@ Run it and for newhost or edithost command option, answer the script prompts :
 The operator using the tool must have the following permissions :
 - can describe EC2 instances on target region and account (to retrieve instanceId based on instance name)
 - can start SSM section onto the target ECS-instance(s) using the documents "AWS-StartNonInteractiveCommand" (to optionnaly auto-install SSH public key) and "AWS-StartSSHSession" (to connect to the EC2 instance)
+
 The EC2 instances you would like to connect to must :
 - have the SSM agent installed, configured and running (most AMI have it all setup by default)
 - have a instance profile role that allows interacting with the SSM service
