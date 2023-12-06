@@ -46,6 +46,7 @@ The EC2 instances you would like to connect to must :
 - have the SSM agent installed, configured and running (most AMI have it all setup by default)
 - have a instance profile role that allows interacting with the SSM service
 - if in a private subnet, this subnets must have VPC endpoint toward the SSM service
+
 See AWS pre-requisite for using AWS SSM sessions.
 ### Add, edit or remove a Host:
 This command allows you to create, edit or delete a host configuration, identified by an alias you can choose. The alias name musts start with "aws-"
