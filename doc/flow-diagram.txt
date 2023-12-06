@@ -24,11 +24,6 @@ opt Get instance ID from Instance name tag
     cli->p: Instance ID
 end
 
-opt Auto install SSH key
-    p->cli: Install public key in SSH authorized_key
-    cli->ec2: command
-end
-
 p->sshc: Connect to EC2
 sshc->pp: Connect to EC2
 pp->cli: Connect to EC2
