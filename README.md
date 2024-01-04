@@ -14,7 +14,7 @@ It also provide a **unique feature that forward and inject locally AWS credentia
 - for each host, allow to configure credential profile, region, user and SSH key to use and activate or not current credential fowarding into the EC2 instance. **If you have a huge list of EC2 instance to connect to, locatad in different account, region and using different credential profile, this tool is for you, a you won't have to insert all that EC2 host specific conf into your ssh config file with a ProxyCommand line you can not refactor**
 
 ## How it works
-![Updating remote SSH extension path parameter](doc/ssh-ssm.png)
+![SSH-SSM proxy tool diagram](doc/ssh-ssm.png)
 See our blog post to understand the connection flow here : {link}
 
 ## Set Up
@@ -45,18 +45,19 @@ C:\Windows\system32\wsl.exe bash -ic '<home-directory-in-wsl>/.ssh/sshProxy.sh %
 ### Add, edit or remove a Host:
 This command allows you to create, edit or delete a host configuration, identified by an alias you can choose. The alias name musts start with "aws-"
 ```
-~/.ssh/sshSsmProxy.sh newhost|edithost|rmhost {alias}
+~/.ssh/sshProxy.sh newhost|edithost|rmhost {alias}
 ```
 Run it and for newhost or edithost command option, answer the script prompts :
-- Instance name tag : enter your target EC2 instance name-tag value
+- Instance name tag : enter your target EC2 instance name-tag value. The instance name appears in your AWS EC2 console : when you list the instances, it's the Name column.
+![Locate eC2 instance name tag](doc/name-tag.png)
 - Connect via AWS SSO y/n : type "y" to gain AWS credential using your corporate IdP and AWS Identity Center (AWS SSO)
 - AWS credential profile to use : enter the name of the AWS credential profile to use to connect to the target EC2 instance (you must configure this profile beforhand). See "operator credential requirement" section to ensure this profile will authorize all action needed by the script
 - Forward local AWS credential into EC2 session y/n : type "y" to forward/inject local credential that are used to connect to the EC2 instance into the remote SSH session. Otherwise, the remote session will use the EC2 instance profile IAM role.
 - Instance region : enter the AS region where the target EC2 instance is running
-- SSH user : enter the SSH user to use to connect to the EC2 instane. This depend the EC2 instance distribution. It might be ec2-user, ubuntu or any other user.
-- SSH private key file path : enter the path to the private SSH key to use to connect to the instance
+- SSH user : enter the SSH user to use to connect to the EC2 instane. This depend the EC2 instance distribution. It might be ec2-user, ubuntu or any other user (consult your target EC2 instance AMI documenation).
+- SSH private key file path : enter the path to the private SSH key to use to connect to the instance. The corresponding public key must be declared into the .ssh/authorized_keys file of your target instance. Without key, the connection via the Remote SSH extension can not work.
 
-## Usage
+## Usagex²xx
 ### Pre-requisite
 The operator using the tool must have the following permissions :
 - can describe EC2 instances on target region and account (to retrieve instanceId based on instance name)
@@ -77,7 +78,7 @@ If you need to connect to a host that hasn't been previously configured, and tha
 
 Note: the private key MUST be in the .ssh directory of current WSL/Linux/MacOS user
 ### Bookmarking hosts
-Into your SSH config file of your windows host C:\Users\{username}\.ssh\config, you can add the host you connect to frequently so it appears in VS Code when you use the command palette to connect to a remote host : 
+Into your SSH config file of your windows host C:\Users\\{username}\\.ssh\config, you can add the host you connect to frequently so it appears in VS Code when you use the command palette to connect to a remote host : 
 ```
 Host aws-host
     HostName aws-host
