@@ -1,5 +1,5 @@
 # ynpact-ssh-ssm-proxy
-Ynpact SSH-SSM-Proxy tool allow to use VS Code remote SSH plugin through a AWS SSM Session Manager SSH session **to connect to and manage remote EC2 hosts in a painlessly manner**.
+Ynpact SSH-SSM-Proxy tool allow to use VS Code remote SSH extension through a AWS SSM Session Manager SSH session **to connect to and manage remote EC2 hosts in a painlessly manner**.
 
 While you'll find on most blog solutions that allow to connect to remote EC2 instance using SSM, none of these are generic enough to allows a convenient daily use. With this proxy script, **you can administrate at scale a wide variety of EC2 instances**, located onto different AWS account and region, using different SSH key/user, AWS authentication methods and AWS credentials profiles.
 
@@ -35,7 +35,7 @@ Write a .bat script thatt lauch the SSH proxy script of step 2. Save this script
 ```
 C:\Windows\system32\wsl.exe bash -ic '<home-directory-in-wsl>/.ssh/sshProxy.sh %*'
 ```
-6) Using the command palette of VS Code (Ctrl+Maj+P) and searching for "remote ssh setting", update the Remote SSH Plugin **Path** parameter in VS Code to use
+6) Using the command palette of VS Code (Ctrl+Maj+P) and searching for "remote ssh setting", update the Remote SSH extension **Path** parameter in VS Code to use
 - Windows: the path to the .bat script you created in step 4.
 - Linux/Mac: ~/.ssh/sshProxy.sh
 ![Updating remote SSH extension path parameter](doc/remote-ssh-settings.png)
