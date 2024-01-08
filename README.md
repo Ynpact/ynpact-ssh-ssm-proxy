@@ -57,6 +57,9 @@ Run it and for newhost or edithost command option, answer the script prompts :
 - SSH user : enter the SSH user to use to connect to the EC2 instane. This depend the EC2 instance distribution. It might be ec2-user, ubuntu or any other user (consult your target EC2 instance AMI documenation).
 - SSH private key file path : enter the path to the private SSH key to use to connect to the instance. The corresponding public key must be declared into the .ssh/authorized_keys file of your target instance. Without key, the connection via the Remote SSH extension can not work.
 
+Example adding an alias **"aws-myTargetEc2Instance"** to connect to the EC2 instance named **"cms-prod1"** and located in the eu-west-3 region, with no credential forwarding, using SSO profile "prod-account" for AWS authentication, Linux user "ec2-user" and ~/.ssh/id_rsa private key.
+![Configure the SSH-SSM proxy tool](doc/conf.png)
+
 ## Usage
 ### Pre-requisite
 The operator using the tool must have the following permissions :
