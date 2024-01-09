@@ -73,7 +73,7 @@ The EC2 instances you would like to connect to must :
 
 See AWS pre-requisite for using AWS SSM sessions.
 ### Connect to a Pre-configured Host:
-In VS Code's command palette, select "Connect to Remote Host," and enter the host's alias choosen when creating a new host.
+In VS Code's command palette, select "Remote SSH: Connect to Host," and enter the host's alias choosen when creating a new host.
 ### Connect to a Non-configured Host:
 If you need to connect to a host that hasn't been previously configured, and that you don't plan to connect to often, use the command palette in VS Code to select "Connect to Remote Host." and enter the host information in the format :
 
