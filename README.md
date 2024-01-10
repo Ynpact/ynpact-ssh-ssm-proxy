@@ -43,11 +43,11 @@ C:\Windows\system32\wsl.exe bash -ic '/<home-directory-in-wsl>/.ssh/sshProxy.sh 
 
 ## Configuration
 ### Add, edit or remove a Host:
-This command allows you to create, edit or delete a host configuration, identified by an alias you can choose. The alias name musts start with "aws-"
+1) This command allows you to create, edit or delete a host configuration, identified by an alias you can choose. The alias name musts start with "aws-"
 ```
 ~/.ssh/sshProxy.sh newhost|edithost|rmhost {alias}
 ```
-Run it and for newhost or edithost command option, answer the script prompts :
+2) Run it and for newhost or edithost command option, answer the script prompts :
 - Instance name tag : enter your target EC2 instance name-tag value. The instance name appears in your AWS EC2 console : when you list the instances, it's the Name column.
 ![Locate eC2 instance name tag](doc/name-tag.png)
 - Connect via AWS SSO y/n : type "y" to gain AWS credential using your corporate IdP and AWS Identity Center (AWS SSO)
