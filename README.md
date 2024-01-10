@@ -23,20 +23,20 @@ You can install it on any operating system, but on windows you must perform thos
    - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
    - [AWS SSM Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
 2) Install VS Code Remote SSH extension in the extension tab of VS Code. [See documentation here.](https://code.visualstudio.com/docs/remote/remote-overview)
-3) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your default user .ssh directory in your Mac/Linux/WSL distribution.
-4) Update your SSH config file (~/.ssh/config) into your default user directory in your Mac/Linux/WSL by adding the following lines :
+3) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your .ssh directory in your Mac/Linux/WSL distribution.
+4) Update your SSH config file (~/.ssh/config) in your Mac/Linux/WSL by adding the following lines :
 ```
 host i-* mi-*
   StrictHostKeyChecking no
   ProxyCommand bash -ci "/home/<user>/.ssh/sshProxy.sh cnx %h %p"
 ```
-5) [Windows only] When you use VS Code in Windows, the client runs into Windows and not WSL. As the tool, SSH & AWS settings runs into WSL, a script is needed to bridge into WSL.
-Write a .bat script thatt lauch the SSH proxy script of step 2. Save this script in your home directory in Windows under the .ssh folder. **Do not use "~" in the script path but the full home directory of your WSL default user.**
+5) [Windows only] When you use VS Code in Windows, the client runs into Windows and not WSL. As the tool, SSH & AWS settings runs into WSL, a script is needed into Windows filesystem to bridge into WSL.
+Write a .bat script that lauch the SSH proxy script of step 2. Save this script in your home directory in Windows under the .ssh folder. **Do not use "~" in the script path but the absolute home directory of your WSL default user.**
 ```
-C:\Windows\system32\wsl.exe bash -ic '<home-directory-in-wsl>/.ssh/sshProxy.sh %*'
+C:\Windows\system32\wsl.exe bash -ic '/<home-directory-in-wsl>/.ssh/sshProxy.sh %*'
 ```
-6) Using the command palette of VS Code (Ctrl+Maj+P) and searching for "remote ssh setting", update the Remote SSH extension **Path** parameter in VS Code to use
-- Windows: the path to the .bat script you created in step 4.
+1) Using the command palette of VS Code (Ctrl+Maj+P) and searching for "remote ssh setting", update the Remote SSH extension **Path** parameter in VS Code to use
+- Windows: the path to the .bat script you created in step 5.
 - Linux/Mac: ~/.ssh/sshProxy.sh
 ![Updating remote SSH extension path parameter](doc/remote-ssh-settings.png)
 ![Updating remote SSH extension path parameter](doc/path-param.png)
@@ -72,14 +72,12 @@ The EC2 instances you would like to connect to must :
 - if in a private subnet, this subnets must have VPC endpoint toward the SSM service
 
 See AWS pre-requisite for using AWS SSM sessions.
-### Connect to a Pre-configured Host:
-In VS Code's command palette, select "Remote SSH: Connect to Host," and enter the host's alias choosen when creating a new host.
-### Connect to a Non-configured Host:
-If you need to connect to a host that hasn't been previously configured, and that you don't plan to connect to often, use the command palette in VS Code to select "Connect to Remote Host." and enter the host information in the format :
 
-{hostname}.{sso|static}.{aws-profile}.{forward-cred-y|n}.{aws-region}.{ssh-user}.{ssh-private-key-file-path}.
+### Connection
+In VS Code's command palette (Ctrl+Maj+P), select "Remote SSH: Connect to Host," and enter the host's alias choosen when creating a new host.
+Once connected, you can mount the EC2 file system into VS Code in the explorer tab.
 
-Note: the private key MUST be in the .ssh directory of current WSL/Linux/MacOS user
+## Other possibilities
 ### Bookmarking hosts
 Into your SSH config file of your windows host C:\Users\\{username}\\.ssh\config, you can add the host you connect to frequently so it appears in VS Code when you use the command palette to connect to a remote host : 
 ```
@@ -88,3 +86,9 @@ Host aws-host
 ```
 ![How to connect to a bookmarked host](doc/bookmarking.png)
 
+### Shortcut to connect to a host without configuring it:
+If you need to connect to a host that hasn't been previously configured, and that you don't plan to connect to often, use the command palette in VS Code to select "Connect to Remote Host." and enter the host information in the format :
+
+{hostname}.{sso|static}.{aws-profile}.{forward-cred-y|n}.{aws-region}.{ssh-user}.{ssh-private-key-file-path}.
+
+Note: the private key MUST be in the .ssh directory of current WSL/Linux/MacOS user
