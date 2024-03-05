@@ -19,48 +19,54 @@ See our blog post to understand the connection flow here : {link}
 
 ## Set Up
 You can install it on any operating system, but on windows you must perform those step in your default WSL distribution with its default user (appart from step 4 and 5 that must be done in the Windows host).
-1) Install the last AWS CLI and the AWS SSM Plugin into your Mac/Linux/WSL (not in Windows). Instruction available in AWS documentation :
+1) Check that you meet the pre-requisites as stated in below paragraphe *More information => Pre-requisites
+2) Install the last AWS CLI and the AWS SSM Plugin into your Mac/Linux/WSL (not in Windows). Instruction available in AWS documentation :
    - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
    - [AWS SSM Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
-2) Install VS Code Remote SSH extension in the extension tab of VS Code. [See documentation here.](https://code.visualstudio.com/docs/remote/remote-overview)
-3) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your .ssh directory in your Mac/Linux/WSL distribution.
-4) Update your SSH config file (~/.ssh/config) in your Mac/Linux/WSL by adding the following lines :
+3) Install VS Code Remote SSH extension in the extension tab of VS Code. [See documentation here.](https://code.visualstudio.com/docs/remote/remote-overview)
+4) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your .ssh directory in your Mac/Linux/WSL distribution.
+5) Update your SSH config file (~/.ssh/config) in your Mac/Linux/WSL by adding the following lines :
 ```
 host i-* mi-*
   StrictHostKeyChecking no
   ProxyCommand bash -ci "/home/<user>/.ssh/sshProxy.sh cnx %h %p"
 ```
-5) [Windows only] When you use VS Code in Windows, the client runs into Windows and not WSL. As the tool, SSH & AWS settings runs into WSL, a script is needed into Windows filesystem to bridge into WSL.
-Write a .bat script that lauch the SSH proxy script of step 2. Save this script in your home directory in Windows under the .ssh folder. **Do not use "~" in the script path but the absolute home directory of your WSL default user.**
+6) [Windows only] Create a file called **ssh-ssm.bat** in Windows under the .ssh folder. Copy-paste the following line into it, replacing **home-directory-in-wsl** by the **absolute** path of your actual home directory in wsl (do not use reltiva path or path with "~").
 ```
 C:\Windows\system32\wsl.exe bash -ic '/<home-directory-in-wsl>/.ssh/sshProxy.sh %*'
 ```
-1) Using the command palette of VS Code (Ctrl+Maj+P) and searching for "remote ssh setting", update the Remote SSH extension **Path** parameter in VS Code to use
+7) Using the command palette of VS Code (Ctrl+Maj+P) and searching for "remote ssh setting", update the Remote SSH extension **Path** parameter in VS Code to use
 - Windows: the path to the .bat script you created in step 5.
 - Linux/Mac: ~/.ssh/sshProxy.sh
 ![Updating remote SSH extension path parameter](doc/remote-ssh-settings.png)
 ![Updating remote SSH extension path parameter](doc/path-param.png)
 
-## Configuration
+
+## Managing target hosts
 ### Add, edit or remove a Host:
-1) This command allows you to create, edit or delete a host configuration, identified by an alias you can choose. The alias name musts start with "aws-"
+This command allows you to create, edit or delete a host configuration, identified by an alias you can choose. The alias name musts start with "aws-"
 ```
 ~/.ssh/sshProxy.sh newhost|edithost|rmhost {alias}
 ```
-2) Run it and for newhost or edithost command option, answer the script prompts :
+Run it **in WSL/Linux/Mac** and for newhost or edithost command option, answer the script prompts. Here are some details about expected input for each prompt:
 - Instance name tag : enter your target EC2 instance name-tag value. The instance name appears in your AWS EC2 console : when you list the instances, it's the Name column.
 ![Locate eC2 instance name tag](doc/name-tag.png)
-- Connect via AWS SSO y/n : type "y" to gain AWS credential using your corporate IdP and AWS Identity Center (AWS SSO)
-- AWS credential profile to use : enter the name of the AWS credential profile to use to connect to the target EC2 instance (you must configure this profile beforhand). See "operator credential requirement" section to ensure this profile will authorize all action needed by the script
+- Connect via AWS SSO y/n : type "y" to gain AWS credential using your corporate IdP and AWS Identity Center (AWS SSO), otherwise it will use the static key of the current AWS profile to connect.
+- AWS credential profile to use : enter the name of the AWS credential profile to use to connect to the target EC2 instance (you must configure this profile beforehand). See "operator credential requirement" section to ensure this profile will authorize all action needed by the script
 - Forward local AWS credential into EC2 session y/n : type "y" to forward/inject local credential that are used to connect to the EC2 instance into the remote SSH session. Otherwise, the remote session will use the EC2 instance profile IAM role.
 - Instance region : enter the AS region where the target EC2 instance is running
 - SSH user : enter the SSH user to use to connect to the EC2 instane. This depend the EC2 instance distribution. It might be ec2-user, ubuntu or any other user (consult your target EC2 instance AMI documenation).
 - SSH private key file path : enter the path to the private SSH key to use to connect to the instance. The corresponding public key must be declared into the .ssh/authorized_keys file of your target instance. Without key, the connection via the Remote SSH extension can not work.
 
-Example adding an alias **"aws-myTargetEc2Instance"** to connect to the EC2 instance named **"cms-prod1"** and located in the eu-west-3 region, with no credential forwarding, using SSO profile "prod-account" for AWS authentication, Linux user "ec2-user" and ~/.ssh/id_rsa private key.
+In the screenshot below, you can see an example of adding an alias **"aws-myTargetEc2Instance"** to connect to the EC2 instance named **"cms-prod1"** and located in the eu-west-3 region, with no credential forwarding, using SSO profile "prod-account" for AWS authentication, Linux user "ec2-user" and ~/.ssh/id_rsa private key.
 ![Configure the SSH-SSM proxy tool](doc/conf.png)
 
-## Usage
+## Connection to a target host
+
+In VS Code's command palette (Ctrl+Maj+P), select "Remote SSH: Connect to Host," and enter the host's alias choosen when creating a new host.
+Once connected, you can mount the EC2 file system into VS Code in the explorer tab.
+
+## More information
 ### Pre-requisite
 The operator using the tool must have the following permissions :
 - can describe EC2 instances on target region and account (to retrieve instanceId based on instance name)
@@ -72,12 +78,6 @@ The EC2 instances you would like to connect to must :
 - if in a private subnet, this subnets must have VPC endpoint toward the SSM service
 
 See AWS pre-requisite for using AWS SSM sessions.
-
-### Connection
-In VS Code's command palette (Ctrl+Maj+P), select "Remote SSH: Connect to Host," and enter the host's alias choosen when creating a new host.
-Once connected, you can mount the EC2 file system into VS Code in the explorer tab.
-
-## Other possibilities
 ### Bookmarking hosts
 Into your SSH config file of your windows host C:\Users\\{username}\\.ssh\config, you can add the host you connect to frequently so it appears in VS Code when you use the command palette to connect to a remote host : 
 ```
