@@ -18,26 +18,27 @@ It also provide a **unique feature that forward and inject locally AWS credentia
 See our blog post to understand the connection flow here : {link}
 
 ## Set Up
-You can install it on any operating system, but on windows you must perform those step in your default WSL distribution with its default user (appart from step 4 and 5 that must be done in the Windows host).
+You can install it on any operating system. 
+**NOTE:** `On Windows you must perform those step in your default WSL distribution with its default user (appart from step 3 and 6 that must be done in the Windows host).`
 1) Check that you meet the pre-requisites as stated in below paragraphe *More information => Pre-requisites
-2) Install the last AWS CLI and the AWS SSM Plugin into your Mac/Linux/WSL (not in Windows). Instruction available in AWS documentation :
+2) Install the last AWS CLI and the AWS SSM Plugin into your `Mac/Linux/WSL` (:warning:not in `Windows host`). Instruction available in AWS documentation :
    - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
    - [AWS SSM Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html)
 3) Install VS Code Remote SSH extension in the extension tab of VS Code. [See documentation here.](https://code.visualstudio.com/docs/remote/remote-overview)
-4) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your .ssh directory in your Mac/Linux/WSL distribution.
-5) Update your SSH config file (~/.ssh/config) in your Mac/Linux/WSL by adding the following lines :
+4) Download the [SSH Proxy Script](src/sshProxy.sh) and save it into your .ssh directory in your `Mac/Linux/WSL` distribution.
+5) Update your SSH config file (~/.ssh/config) in your `Mac/Linux/WSL` by adding the following lines :
 ```
 host i-* mi-*
   StrictHostKeyChecking no
   ProxyCommand bash -ci "/home/<user>/.ssh/sshProxy.sh cnx %h %p"
 ```
-6) [Windows only] Create a file called **ssh-ssm.bat** in Windows under the .ssh folder. Copy-paste the following line into it, replacing **home-directory-in-wsl** by the **absolute** path of your actual home directory in wsl (do not use reltiva path or path with "~").
+6) [:warning: **Windows only**] Create a file called **ssh-ssm.bat** in Windows under the .ssh folder. Copy-paste the following line into it, replacing **home-directory-in-wsl** by the **absolute** path of your actual home directory in wsl (do not use reltiva path or path with "~").
 ```
 C:\Windows\system32\wsl.exe bash -ic '/<home-directory-in-wsl>/.ssh/sshProxy.sh %*'
 ```
 7) Using the command palette of VS Code (Ctrl+Maj+P) and searching for "remote ssh setting", update the Remote SSH extension **Path** parameter in VS Code to use
-- Windows: the path to the .bat script you created in step 5.
-- Linux/Mac: ~/.ssh/sshProxy.sh
+- `Windows`: the path to the  **ssh-ssm.bat**  script you created in step 6.
+- `Linux/Mac`: **~/.ssh/sshProxy.sh**
 ![Updating remote SSH extension path parameter](doc/remote-ssh-settings.png)
 ![Updating remote SSH extension path parameter](doc/path-param.png)
 
