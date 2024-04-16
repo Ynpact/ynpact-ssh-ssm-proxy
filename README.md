@@ -15,7 +15,7 @@ It also provide a **unique feature that forward and inject locally AWS credentia
 
 ## How it works
 ![SSH-SSM proxy tool diagram](doc/ssh-ssm.png)
-See our blog post to understand the connection flow here : {link}
+[See our blog post to understand the connection flow](https://www.ynpact.com/connect-to-ec2-instances-with-vs-code-via-aws-ssm-painlessly/)
 
 ## Set Up
 You can install it on any operating system. 
@@ -85,6 +85,10 @@ Once connected, you can mount the EC2 file system into VS Code in the explorer t
 > - have a instance profile role that allows interacting with the SSM service
 > - if in a private subnet, this subnets must have VPC endpoint toward the SSM service
 >See AWS pre-requisite for using AWS SSM sessions.
+> ### More about Security
+> [See our blog for more details about security](https://www.ynpact.com/connect-to-ec2-instances-with-vs-code-via-aws-ssm-painlessly/)
+> ### Contribute
+> We are happy to receive your pull request and enhancment suggestion !
 
 > [!TIP]
 > ### Bookmarking hosts
