@@ -78,7 +78,7 @@ fi
 
 # handle connection for aws-* like hostnames
 if [[ $# == 3 && $1 == "cnx" ]]; then
-    log "connection with AWS SSM..."
+    log "connection with AWS SSM... $*"
     target=$2
     portNumber=$3
     instanceId=$(echo $target | awk -F '.' '{print $1}')
@@ -135,8 +135,24 @@ if [[ $# == 2 && $1 == "rmhost" ]]; then
     exit 0
 fi
 
-target=$4
+#target=$4
+target=$(echo "$*" | grep -o '\baws-\w*')
+bindPort=$(echo "$*" | grep -oP '(?<=-D\s)\d+')
+connectionTimeout=$(echo "$*" | grep -oP '(?<=-o\sConnectTimeout=)\d+')
+
+if [ -z "$target" ]; then
+    target=$(echo "$*" | grep -oE '[[:alnum:]_-]+(\.[[:alnum:]_-]+)+')
+fi
+
+if [ -z "$connectionTimeout" ]; then
+    connectionTimeout="15"
+fi
+
+log "All: $*"
 log "Target: $target"
+log "Bind port: $bindPort"
+log "Connection timeout: $connectionTimeout"
+
 
 # if host conf in conf file
 if [[ "$target" =~ $regexp ]]; then
@@ -153,7 +169,7 @@ if [[ "$target" =~ $regexp ]]; then
     login
     instanceId=$(aws ec2 describe-instances --output text --query "Reservations[*].Instances[*].InstanceId" --filters "Name=tag:Name,Values=$instanceName" --region $region)
     forwardCredInBash
-    command="ssh $1 $2 $3 -i $key $user@$instanceId.$profile.$region $bashCommand"
+    command="ssh -T -D $bindPort -o ConnectTimeout=$connectionTimeout -i $key $user@$instanceId.$profile.$region $bashCommand"
     log "$command"
     $command
 # if using directly (no conf file)
@@ -174,7 +190,7 @@ elif [[ "$target" =~ $regexpId ]]; then
         instanceId=$(aws ec2 describe-instances --output text --query "Reservations[*].Instances[*].InstanceId" --filters "Name=tag:Name,Values=$instanceName" --region $region)
     fi
     forwardCredInBash
-    command="ssh $1 $2 $3 -i $key $user@$instanceId.$profile.$region $bashCommand"
+    command="ssh -T -D $bindPort -o ConnectTimeout=$connectionTimeout -i $key $user@$instanceId.$profile.$region $bashCommand"
     log "$command"
     $command
 else
