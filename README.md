@@ -15,7 +15,7 @@ It also provide a **unique feature that forward and inject locally AWS credentia
 
 ## How it works
 ![SSH-SSM proxy tool diagram](doc/ssh-ssm.png)
-See our blog post to understand the connection flow here : {link}
+[See our blog post to understand the connection flow](https://www.ynpact.com/connect-to-ec2-instances-with-vs-code-via-aws-ssm-painlessly/)
 
 ## Set Up
 You can install it on any operating system, but on windows you must perform those step in your default WSL distribution with its default user (appart from step 4 and 5 that must be done in the Windows host).
@@ -92,3 +92,6 @@ If you need to connect to a host that hasn't been previously configured, and tha
 {hostname}.{sso|static}.{aws-profile}.{forward-cred-y|n}.{aws-region}.{ssh-user}.{ssh-private-key-file-path}.
 
 Note: the private key MUST be in the .ssh directory of current WSL/Linux/MacOS user
+
+### Security consideration
+[Check this note to know more about security](doc/security_en.md)
