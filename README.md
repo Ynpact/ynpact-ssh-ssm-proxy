@@ -86,7 +86,7 @@ Once connected, you can mount the EC2 file system into VS Code in the explorer t
 > - if in a private subnet, this subnets must have VPC endpoint toward the SSM service
 >See AWS pre-requisite for using AWS SSM sessions.
 > ### More about Security
-> [See our blog for more details about security](doc/security_en.md)
+> [See this note for more details about security](doc/security_en.md)
 > ### Contribute
 > We are happy to receive your pull request and enhancment suggestion !
 
